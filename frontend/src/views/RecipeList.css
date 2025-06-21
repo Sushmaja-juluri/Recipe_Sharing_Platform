@@ -65,3 +65,40 @@
     border-radius: 8px;
     margin-top: 2em;
 }
+/* Add these styles to your existing RecipeList.css */
+.button-group {
+    display: flex;
+    gap: 1em;
+}
+
+.signupButton {
+    background-color: #4285f4;
+    color: white;
+    border-radius: 8px;
+    border: none;
+    padding: 0.8em 1.5em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.signupButton:hover {
+    background-color: #3367d6;
+}
+
+.user-info {
+    margin-left: auto;
+    padding: 0.5em 1em;
+    background: #f0f0f0;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+/* Adjust header layout */
+.header {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    padding: 1em;
+    width: 100%;
+}
