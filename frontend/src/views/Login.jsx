@@ -41,7 +41,7 @@ export default function Login() {
         <div className="loginContainer">
             <div className="loginCard">
                 <div className="loginHeader">Login</div>
-                <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1em' }}>
+                <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '2em' }}>
                     <input
                         type="email"
                         placeholder="Email"
