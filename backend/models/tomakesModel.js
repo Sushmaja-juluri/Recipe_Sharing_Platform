@@ -8,8 +8,14 @@ const tomakeSchema = new mongoose.Schema({
     completed: {
         type: Boolean,
         default: false
+    },
+    createdBy: {
+        type: String,
+        required: true
     }
-});
+})
 
-const Tomakes = mongoose.model('tomakes', tomakeSchema);
+
+const Tomakes = mongoose.model('tomakes', tomakeSchema)
+
 module.exports = Tomakes;
