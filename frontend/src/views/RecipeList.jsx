@@ -76,7 +76,7 @@ export default function RecipeList() {
     return (
         <div id="ancestorContainer" className="ancestorContainer">
             <div id="header" className='header'>
-                My Tasks
+                My Recipes
                 <div className="button-group">
                     <button onClick={handleCreate} className="createRecipeButton">Create Recipe</button>
                     <button onClick={handleSignup} className="signupButton">Sign Up</button>
