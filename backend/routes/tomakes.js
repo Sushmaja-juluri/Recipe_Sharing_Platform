@@ -1,16 +1,11 @@
-const tomakeRouter = require('express').Router();
-const tomakesController = require('../controllers/tomakesController');
+const router = require('express').Router();
+const tomakeController = require('../controllers/tomakesController');
 const { authenticate } = require('../middlewares/authMiddleware');
 
-tomakeRouter.get('/', authenticate, tomakesController.getAllTomakes);
+router.get('/', authenticate, tomakeController.getAllTomakes);
+router.get('/:id', authenticate, tomakeController.getTomakeById);
+router.post('/', authenticate, tomakeController.createTomake);
+router.patch('/:id', authenticate, tomakeController.updateTomake);
+router.delete('/:id', authenticate, tomakeController.deleteTomake);
 
-tomakeRouter.get('/:id', authenticate, tomakesController.getTomakeById);
-
-tomakeRouter.post('/', authenticate, tomakesController.createTomake);
-
-tomakeRouter.patch('/:id', authenticate, tomakesController.updateTomake);
-
-tomakeRouter.delete('/:id', authenticate, tomakesController.deleteTomake);
-
-
-module.exports = tomakeRouter;
+module.exports = router;

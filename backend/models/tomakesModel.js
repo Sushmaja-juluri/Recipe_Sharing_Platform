@@ -1,27 +1,33 @@
 const mongoose = require('mongoose');
 
-const todoSchema = new mongoose.Schema(
+const tomakeSchema = new mongoose.Schema(
   {
-    title: {
+    dishName: {
       type: String,
       required: true,
       trim: true,
     },
-    completed: {
-      type: Boolean,
-      default: false,
+    prepTime: {
+      type: String,
+      trim: true,
+    },
+    ingredients: {
+      type: String,
+    },
+    steps: {
+      type: String,
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'users', // Assuming your user model is named 'users'
+      ref: 'userModel', // Make sure this matches your User model name
       required: true,
     },
   },
   {
-    timestamps: true, // Automatically adds createdAt and updatedAt fields
+    timestamps: true,
   }
 );
 
-const Tomakes = mongoose.model('tomakes', todoSchema);
+const Tomakes = mongoose.model('Tomake', tomakeSchema); // model name is singular, capitalized
 
 module.exports = Tomakes;
