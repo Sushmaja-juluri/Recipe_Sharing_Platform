@@ -2,134 +2,90 @@ import './RecipeList.css';
 import RecipeCard from '../components/RecipeCard';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 
 export default function RecipeList() {
     const [recipes, setRecipes] = useState([]);
-    const [recipeName, setRecipeName] = useState('');
+    const [dishName, setDishName] = useState('');
+    const [prepTime, setPrepTime] = useState('');
+    const [ingredients, setIngredients] = useState('');
+    const [steps, setSteps] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [modalType, setModalType] = useState('create');
     const [currentRecipe, setCurrentRecipe] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
-
-    const navigate = useNavigate();
-    const token = localStorage.getItem('accessToken');
-    const username = JSON.parse(localStorage.getItem('user'))?.user?.username || 'randomUser';
-
-    const axiosConfig = {
-        headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        },
-    };
-
-    const fetchRecipes = async () => {
-        setLoading(true);
-        try {
-            const res = await axios.get('/tomakes', axiosConfig);
-            setRecipes(res.data?.tomakes || []);
-        } catch (err) {
-            setError('Failed to fetch recipes');
-            if (err.response?.status === 401) handleLogout();
-        } finally {
-            setLoading(false);
-        }
-    };
 
     useEffect(() => {
-        if (!token) {
-            navigate('/login');
-            return;
-        }
-        fetchRecipes();
+        axios.get('http://localhost:3000/recipes')
+            .then(res => {
+                if (res?.data?.recipes) {
+                    const formatted = res.data.recipes.map(r => ({
+                        id: r._id,
+                        dishName: r.dishName,
+                        prepTime: r.prepTime,
+                        ingredients: r.ingredients,
+                        steps: r.steps
+                    }));
+                    setRecipes(formatted);
+                }
+            })
+            .catch(error => console.error('Failed to load recipes', error.message));
     }, []);
 
     const handleEdit = (recipe) => {
         setModalType('edit');
-        setShowModal(true);
         setCurrentRecipe(recipe);
-        setRecipeName(recipe.title);
+        setDishName(recipe.dishName);
+        setPrepTime(recipe.prepTime);
+        setIngredients(recipe.ingredients);
+        setSteps(recipe.steps);
+        setShowModal(true);
     };
 
-    const handleDelete = async (recipe) => {
-        try {
-            await axios.delete(`/tomakes/${recipe._id}`, axiosConfig);
-            setRecipes(prev => prev.filter(r => r._id !== recipe._id));
-        } catch (err) {
-            setError('Failed to delete recipe');
-            if (err.response?.status === 401) handleLogout();
-        }
+    const handleDelete = (recipe) => {
+        setRecipes(prev => prev.filter(r => r.id !== recipe.id));
+        // Optional: Add axios.delete call here
     };
 
     const handleCreate = () => {
         setModalType('create');
         setCurrentRecipe(null);
-        setRecipeName('');
+        setDishName('');
+        setPrepTime('');
+        setIngredients('');
+        setSteps('');
         setShowModal(true);
     };
 
-    const handleSubmit = async () => {
-        if (!recipeName.trim()) {
-            setError('Recipe name cannot be empty');
-            return;
+    const handleSubmit = () => {
+        if (!dishName.trim() || !prepTime.trim()) return;
+
+        const newRecipe = {
+            id: modalType === 'edit' ? currentRecipe.id : Date.now(),
+            dishName,
+            prepTime,
+            ingredients,
+            steps
+        };
+
+        if (modalType === 'edit') {
+            setRecipes(prev => prev.map(r => r.id === currentRecipe.id ? newRecipe : r));
+        } else {
+            setRecipes(prev => [...prev, newRecipe]);
         }
 
-        setLoading(true);
-        try {
-            let res;
-            if (modalType === 'edit') {
-                res = await axios.patch(
-                    `/tomakes/${currentRecipe._id}`,
-                    { title: recipeName },
-                    axiosConfig
-                );
-                setRecipes(prev => prev.map(r => 
-                    r._id === currentRecipe._id ? res.data.updatedTomake : r
-                ));
-            } else {
-                res = await axios.post(
-                    '/tomakes',
-                    { title: recipeName, completed: false },
-                    axiosConfig
-                );
-                setRecipes(prev => [...prev, res.data.newTomake]);
-            }
-            setShowModal(false);
-            setRecipeName('');
-            setError('');
-        } catch (err) {
-            console.error('Submission error:', err);
-            setError(err.response?.data?.error || 'Failed to submit recipe');
-            if (err.response?.status === 401) handleLogout();
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleLogout = () => {
-        localStorage.clear();
-        navigate('/login', { replace: true });
-    };
-
-    const handleSignup = () => {
-        navigate('/signup');
+        setShowModal(false);
+        setDishName('');
+        setPrepTime('');
+        setIngredients('');
+        setSteps('');
+        setCurrentRecipe(null);
     };
 
     return (
         <div className="ancestorContainer">
             <div className="header">
                 <h2>My Recipes</h2>
-                <div className="button-group">
-                    <button onClick={handleCreate} className="createRecipeButton">Create Recipe</button>
-                    <button onClick={handleSignup} className="signupButton">Sign Up</button>
-                    <button onClick={handleLogout} className="logoutButton">Logout</button>
-                </div>
-                <div className="user-info">Logged in user: <strong>{username}</strong></div>
+                <button onClick={handleCreate} className="createRecipeButton">Create Recipe</button>
             </div>
-
-            {error && <div className="error-message">{error}</div>}
-            {loading && <div className="loading-indicator">Loading...</div>}
 
             {recipes.length > 0 ? (
                 recipes.map((recipe, index) => (
@@ -141,7 +97,7 @@ export default function RecipeList() {
                     />
                 ))
             ) : (
-                <div className="noRecipes">No Recipe to display</div>
+                <div className="noRecipes">No Recipes to display</div>
             )}
 
             {showModal && (
@@ -150,26 +106,29 @@ export default function RecipeList() {
                         <h2>{modalType === 'edit' ? 'Edit Recipe' : 'Create Recipe'}</h2>
                         <input
                             type="text"
-                            value={recipeName}
-                            onChange={(e) => setRecipeName(e.target.value)}
-                            placeholder="Enter recipe name"
-                            disabled={loading}
+                            placeholder="Dish Name"
+                            value={dishName}
+                            onChange={(e) => setDishName(e.target.value)}
+                        />
+                        <input
+                            type="number"
+                            placeholder="Preparation Time (mins)"
+                            value={prepTime}
+                            onChange={(e) => setPrepTime(e.target.value)}
+                        />
+                        <textarea
+                            placeholder="Ingredients (comma-separated)"
+                            value={ingredients}
+                            onChange={(e) => setIngredients(e.target.value)}
+                        />
+                        <textarea
+                            placeholder="Steps"
+                            value={steps}
+                            onChange={(e) => setSteps(e.target.value)}
                         />
                         <div className="modalButtons">
-                            <button 
-                                onClick={handleSubmit} 
-                                disabled={loading}
-                                className="modalButton"
-                            >
-                                {loading ? 'Processing...' : 'Submit'}
-                            </button>
-                            <button 
-                                onClick={() => !loading && setShowModal(false)}
-                                disabled={loading}
-                                className="modalButton"
-                            >
-                                Cancel
-                            </button>
+                            <button onClick={handleSubmit} className="modalButton">Submit</button>
+                            <button onClick={() => setShowModal(false)} className="modalButton">Cancel</button>
                         </div>
                     </div>
                 </div>

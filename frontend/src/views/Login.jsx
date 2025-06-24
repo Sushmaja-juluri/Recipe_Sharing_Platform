@@ -1,78 +1,65 @@
 import './Login.css';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axios from 'axios'
 
 export default function Login() {
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [password, setPassword] = useState('')
     const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
-
-    useEffect(() => {
-        const user = localStorage.getItem('user');
-        if (user) navigate('/');
-    }, [navigate]);
 
     const handleLogin = async (e) => {
         e.preventDefault();
         setError('');
-        setLoading(true);
 
-        // 🔐 Mock authentication (remove this when backend is ready)
-        if (email === 'admin@example.com' && password === 'Admin@1234') {
-            const mockToken = 'mock-token';
-            const mockUser = { name: 'Admin', email };
+        try {
+            const response = await axios.post('/auth/login', {
+                email,
+                password,
+            });
 
-            localStorage.setItem('user', JSON.stringify({ token: mockToken, user: mockUser }));
-            axios.defaults.headers.common['Authorization'] = `Bearer ${mockToken}`;
+            const { accessToken, user } = response.data;
+
+            // Save token and user info in localStorage
+            localStorage.setItem('user', JSON.stringify({ token: accessToken, user }));
+
+            // Set default Authorization header for future requests
+            axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+
             navigate('/');
-        } else {
-            setPassword('');
-            setError('Invalid email or password.');
+        } catch (err) {
+            if (err.response) {
+                setError(err.response.data.message || 'Login failed');
+            } else {
+                setError('Network error. Please try again.');
+            }
         }
-
-        setLoading(false);
     };
 
     return (
-        <div className="loginContainer">
-            <div className="loginCard">
-                <div className="loginHeader">Login</div>
-                <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '2em' }}>
-                    <input
-                        type="email"
-                        placeholder="Email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="loginInput"
-                        required
-                    />
-                    <div style={{ position: 'relative' }}>
+        <>
+            <div id='loginContainer' className="loginContainer">
+                <div id="loginCard" className='loginCard'>
+                    <div id="loginHeader" className="loginHeader">Login</div>
+                    <form onSubmit={(e) => handleLogin(e)} style={{ display: 'flex', flexDirection: 'column', gap: '1em' }}>
                         <input
-                            type={showPassword ? 'text' : 'password'}
-                            placeholder="Password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="loginInput"
+                            type='email'
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                             required
                         />
-                        <button
-                            type="button"
-                            onClick={() => setShowPassword(!showPassword)}
-                            className="passwordToggle"
-                        >
-                            {showPassword ? '👁️' : '👁️‍🗨️'}
-                        </button>
-                    </div>
-                    {error && <div className="errorMessage">{error}</div>}
-                    <button type="submit" disabled={loading}>
-                        {loading ? 'Logging in...' : 'Login'}
-                    </button>
-                </form>
+                        <input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                        />
+                        {error && <div style={{ color: 'red' }}>{error}</div>}
+                        <button type='submit'>Login</button>
+                    </form>
+                </div>
             </div>
-        </div>
-    );
+        </>
+    )
 }

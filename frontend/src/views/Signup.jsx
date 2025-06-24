@@ -8,64 +8,33 @@ export default function Signup() {
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
     const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState('');
     const navigate = useNavigate();
 
     const handleSignup = async (e) => {
         e.preventDefault();
         setError('');
-        setLoading(true);
+        setSuccess('');
 
         try {
-            console.log("Starting signup process...");
-            console.log("Base URL:", axios.defaults.baseURL);
-            
-            const payload = { username, email, password };
-            console.log("Request payload:", payload);
-
-            const response = await axios.post('/auth/signup', payload, {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
+            const response = await axios.post('/auth/signup', {
+                username,
+                email,
+                password,
             });
 
-            console.log("Response received:", response);
-
-            if (!response.data) {
-                throw new Error("Empty response from server");
-            }
-
             const { accessToken, user } = response.data;
-            if (!accessToken || !user) {
-                throw new Error("Invalid response structure");
-            }
 
             localStorage.setItem('user', JSON.stringify({ token: accessToken, user }));
             axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
 
-            console.log("Authentication successful, redirecting...");
-            navigate('/', { replace: true });
-
+            navigate('/');
         } catch (err) {
-            console.error("Signup error:", err);
-            
-            let errorMessage = 'Signup failed';
             if (err.response) {
-                console.error("Response error:", err.response.data);
-                errorMessage = err.response.data?.error || 
-                             err.response.data?.message || 
-                             `Server error: ${err.response.status}`;
-            } else if (err.request) {
-                console.error("No response received");
-                errorMessage = 'No response from server. Check your connection.';
+                setError(err.response.data.error || 'Signup failed');
             } else {
-                console.error("Request setup error:", err.message);
-                errorMessage = err.message;
+                setError('Network error. Please try again.');
             }
-            
-            setError(errorMessage);
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -80,7 +49,6 @@ export default function Signup() {
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         required
-                        disabled={loading}
                     />
                     <input
                         type='email'
@@ -88,7 +56,6 @@ export default function Signup() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
-                        disabled={loading}
                     />
                     <input
                         type='password'
@@ -96,20 +63,10 @@ export default function Signup() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
-                        disabled={loading}
                     />
-                    {error && (
-                        <div style={{ color: 'red', margin: '10px 0' }}>
-                            Error: {error}
-                        </div>
-                    )}
-                    <button 
-                        type='submit' 
-                        disabled={loading}
-                        style={{ opacity: loading ? 0.7 : 1 }}
-                    >
-                        {loading ? 'Signing up...' : 'Sign Up'}
-                    </button>
+                    {error && <div style={{ color: 'red' }}>{error}</div>}
+                    {success && <div style={{ color: 'green' }}>{success}</div>}
+                    <button type='submit'>Sign Up</button>
                 </form>
             </div>
         </div>

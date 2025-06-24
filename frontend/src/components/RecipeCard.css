@@ -1,31 +1,53 @@
 .recipeCard {
+    background-color: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
     display: flex;
-    width: 80%;
-    padding: 1.5em;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
     justify-content: space-between;
-    margin-top: 1em;
+    align-items: flex-start;
 }
 
-.cardActions {
+.recipeDetails {
+    flex: 1;
+}
+
+.recipeTitle {
+    margin: 0;
+    font-size: 20px;
+    color: #333;
+}
+
+.prepTime,
+.ingredients,
+.steps {
+    font-size: 14px;
+    color: #555;
+    margin-top: 6px;
+}
+
+.recipeActions {
     display: flex;
-    gap: 1em;
+    flex-direction: column;
+    gap: 8px;
+    margin-left: 20px;
 }
 
 .actionButton {
-    width: 4em;
-    height: 2em;
-    background-color: lightblue;
+    padding: 6px 12px;
+    font-size: 14px;
     border: none;
-    border-radius: 8px;
+    border-radius: 6px;
+    background-color: #007BFF;
+    color: white;
+    cursor: pointer;
 }
 
 .deleteButton {
-    background-color: coral;
+    background-color: #dc3545;
 }
 
-.recipeNameContainer {
-    display: flex;
-    gap: 1em;
+.actionButton:hover {
+    opacity: 0.9;
 }
