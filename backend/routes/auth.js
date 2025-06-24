@@ -1,10 +1,9 @@
-const express = require('express');
-const authRouter = express.Router();
+const authRouter = require('express').Router();
 const authController = require('../controllers/authController');
+const { authLimiter } = require('../middlewares/rateLimitedMiddleware');
 
-// Auth routes
-authRouter.post('/signup', authController.signup);
-authRouter.post('/login', authController.login);
+authRouter.post('/signup', authLimiter, authController.signup);
+
+authRouter.post('/login', authLimiter, authController.login);
 
 module.exports = authRouter;
-

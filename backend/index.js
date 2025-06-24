@@ -5,30 +5,31 @@ const cors = require('cors');
 const mongoConnection = require('./config/mongodb');
 const tomakeRouter = require('./routes/tomakes');
 const authRouter = require('./routes/auth');
+const userRouter=require('./routes/user');
 
 const { authenticate } = require('./middlewares/authMiddleware');
 const { requiredRole } = require('./middlewares/verifyRoleMiddleware');
-// const userRouter = require('./routes/user'); // Uncomment this when you create it
+
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: '*'
+}));
 
+const PORT=process.env.PORT||3000;
 // DB connection
 mongoConnection();
 
 // Routes
 app.use('/auth', authRouter);
-app.use('/tomakes', authenticate, tomakeRouter);
-
-// Optional admin-protected user route (uncomment if implemented)
-// app.use('/users', authenticate, requiredRole(['admin']), userRouter);
+app.use('/tomakes',tomakeRouter);
+app.use('/users',authenticate,requiredRole(['admin']),userRouter)
 
 app.get('/', (req, res) => {
-  res.status(200).send({ message: 'Server is successfully running' });
+  return res.status(200).send({ message: 'Server is successfully running' });
 });
 
 app.listen(PORT, () => {

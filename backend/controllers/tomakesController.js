@@ -1,9 +1,9 @@
 const Tomakes = require('../models/tomakesModel');
 
-// ✅ Get all tomakes created by the current user
+// GET all recipes
 exports.getAllTomakes = async (req, res) => {
     try {
-        const tomakes = await Tomakes.find({ createdBy: req.user.id });
+        const tomakes = await Tomakes.find({ createdBy: req.user._id });
         return res.status(200).send({ tomakes });
     } catch (error) {
         console.error('Error fetching all tomakes:', error.message);
@@ -11,7 +11,7 @@ exports.getAllTomakes = async (req, res) => {
     }
 };
 
-// ✅ Get a single tomake by ID
+// GET a single recipe by ID
 exports.getTomakeById = async (req, res) => {
     const id = req.params.id;
     try {
@@ -26,14 +26,11 @@ exports.getTomakeById = async (req, res) => {
     }
 };
 
-// ✅ Create a new tomake
+// CREATE a new recipe
 exports.createTomake = async (req, res) => {
-    const title = req.body.title;
+    const { title } = req.body;
     try {
-        const newTomake = new Tomakes({
-            title,
-            createdBy: req.user.id
-        });
+        const newTomake = new Tomakes({ title, createdBy: req.user._id });
         const savedTomake = await newTomake.save();
         return res.status(201).send({ newTomake: savedTomake });
     } catch (error) {
@@ -42,15 +39,11 @@ exports.createTomake = async (req, res) => {
     }
 };
 
-// ✅ Update an existing tomake
+// UPDATE a recipe by ID
 exports.updateTomake = async (req, res) => {
     const id = req.params.id;
     try {
-        const updatedTomake = await Tomakes.findByIdAndUpdate(
-            id,
-            req.body,
-            { new: true, runValidators: true }
-        );
+        const updatedTomake = await Tomakes.findByIdAndUpdate(id, req.body, { new: true });
         if (!updatedTomake) {
             return res.status(404).send({ error: 'Tomake not found' });
         }
@@ -61,7 +54,7 @@ exports.updateTomake = async (req, res) => {
     }
 };
 
-// ✅ Delete a tomake
+// DELETE a recipe by ID
 exports.deleteTomake = async (req, res) => {
     const id = req.params.id;
     try {
