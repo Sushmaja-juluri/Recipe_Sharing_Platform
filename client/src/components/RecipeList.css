@@ -1,0 +1,39 @@
+.recipe-list-container {
+  padding: 2rem;
+  background-color: #fafafa;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.search-box {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.search-input {
+  padding: 10px 15px;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  width: 100%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+/* Logout Button Style (top-right) */
+.logout-btn-fixed {
+  position: fixed;
+  top: 20px;
+  right: 30px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+.logout-btn-fixed:hover {
+  background-color: #c82333;
+}

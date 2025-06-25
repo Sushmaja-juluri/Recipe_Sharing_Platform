@@ -1,0 +1,69 @@
+.recipe-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  background-color: #fff;
+  transition: transform 0.2s ease;
+}
+
+.recipe-card:hover {
+  transform: scale(1.01);
+}
+
+.recipe-image {
+  height: 200px;
+  object-fit: cover;
+  width: 100%;
+}
+
+.card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.card-title {
+  font-weight: 600;
+  font-size: 1.4rem;
+  margin-bottom: 12px;
+  color: #2c3e50;
+  text-align: center;
+}
+
+.card-text {
+  font-size: 0.95rem;
+  color: #555;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.steps-list {
+  padding-left: 20px;
+  margin-bottom: 0;
+  text-align: left;
+}
+
+.steps-list li {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #333;
+}
+
+.button-row {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 15px;
+}
+
+.button-row .btn {
+  min-width: 90px;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
